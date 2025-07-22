@@ -1,44 +1,59 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardActions,
+  Typography,
+  IconButton,
+  Box,
+} from '@mui/material';
 import { GoHeart, GoHeartFill } from 'react-icons/go';
 import type { Pokemon } from '../types';
+import { capitalize } from '../utils/capitalize';
 
 interface PokemonCardProps {
   pokemon: Pokemon;
   favoritedPokemons: Pokemon[];
   toggleFavorite: (pokemon: Pokemon) => void;
   handleSelectPokemon: (pokemon: string) => void;
+  spriteUrl?: string; // optional thumbnail for list view (if cached)
 }
 
-const PokemonCard: React.FC<PokemonCardProps> = ({
+export const PokemonCard: React.FC<PokemonCardProps> = ({
   pokemon,
   favoritedPokemons,
   toggleFavorite,
   handleSelectPokemon,
+  spriteUrl,
 }) => {
   const isFavorite = favoritedPokemons.some((fav) => fav.name === pokemon.name);
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
-    >
-      <Typography
-        onClick={() => {
-          handleSelectPokemon(pokemon.name);
-        }}
-        variant='h6'
-      >
-        {pokemon.name}
-      </Typography>
-      <IconButton onClick={() => toggleFavorite(pokemon)}>
-        {isFavorite ? <GoHeartFill /> : <GoHeart />}
-      </IconButton>
-    </Box>
+    <Card sx={{ width: 160, textAlign: 'center' }}>
+      <CardActionArea onClick={() => handleSelectPokemon(pokemon.name)}>
+        <CardContent>
+          {spriteUrl ? (
+            <Box
+              component='img'
+              src={spriteUrl}
+              alt={pokemon.name}
+              sx={{ width: 72, height: 72, objectFit: 'contain' }}
+            />
+          ) : null}
+          <Typography variant='subtitle1' noWrap>
+            {capitalize(pokemon.name)}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      <CardActions sx={{ justifyContent: 'center', pb: 1 }}>
+        <IconButton
+          aria-label={isFavorite ? 'remove from favorites' : 'add to favorites'}
+          onClick={() => toggleFavorite(pokemon)}
+        >
+          {isFavorite ? <GoHeartFill /> : <GoHeart />}
+        </IconButton>
+      </CardActions>
+    </Card>
   );
 };
-
-export default PokemonCard;
